@@ -41,7 +41,7 @@ cp config/config.yaml.example config/config.yaml
 # 编辑 config/config.yaml，配置 Redis 和 Embedding 服务
 
 # 运行
-go run main.go
+cd cmd && go run main.go
 ```
 
 ### 配置
@@ -55,6 +55,16 @@ redis:
   password: ""
   db: 0
 
+# Embedding 服务配置
+embedding_model:
+  choose: "dashscope"
+  batch_size: 100
+  key_prefix: "default_vec_idx:"
+  dashscope:
+    api_key: "your-api-key"
+    model: "text-embedding-v4"
+    dimensions: 1024
+
 # 向量索引配置
 redis_vector_indexes:
   vector_index:
@@ -62,11 +72,6 @@ redis_vector_indexes:
     vector_field:
       dim: 1024
       algorithm: "HNSW"
-
-# Indexer 配置
-indexer:
-  batch_size: 100
-  key_prefix: "default_vec_idx:"
 ```
 
 ## 使用
@@ -77,15 +82,7 @@ indexer:
 
 ```bash
 # 查看索引状态
-./list.sh
-```
-
-### 搜索
-
-通过 API 进行向量搜索：
-
-```bash
-curl -X GET "http://localhost:8080/api/search?query=测试"
+./scripts/list.sh
 ```
 
 ## 文档
@@ -98,18 +95,37 @@ curl -X GET "http://localhost:8080/api/search?query=测试"
 
 ```
 DevopsAssistant/
-├── app/
-│   ├── service/
-│   │   ├── agents/
-│   │   │   └── knowledge/      # 知识索引相关
-│   │   └── embedding/          # 嵌入服务
-│   └── util/
-│       └── call_back/          # 回调工具
-├── bootstrap/                  # 初始化模块
-├── config/                     # 配置文件
-├── docs/                       # 文档目录
-├── list.sh                     # 索引查看脚本
-├── main.go                     # 主程序
+├── cmd/
+│   └── main.go                    # 入口点
+├── internal/
+│   ├── agent/                     # 业务逻辑层（智能代理）
+│   │   └── knowledge/
+│   │       ├── knowledge.go       # 知识代理编排
+│   │       ├── indexer.go         # 索引器
+│   │       ├── loader.go          # 文档加载
+│   │       └── transformer.go     # 文档转换
+│   ├── config/                    # 配置管理
+│   │   ├── config.go              # 配置结构体
+│   │   └── loader.go              # 配置加载
+│   ├── external/                  # 外部服务层
+│   │   └── embedding/
+│   │       └── dashscope.go       # Dashscope 实现
+│   ├── infrastructure/            # 基础设施层
+│   │   ├── redis/
+│   │   │   ├── client.go          # Redis 客户端
+│   │   │   └── index.go           # Redis 索引
+│   │   └── logger/
+│   │       └── logger.go          # 日志初始化
+│   └── pkg/                       # 工具包
+│       └── callback/
+│           └── callback.go
+├── bootstrap/                     # 系统初始化
+│   └── init.go
+├── config/
+│   └── config.yaml                # 配置文件
+├── docs/                          # 文档目录
+├── scripts/
+│   └── list.sh                    # 索引查看脚本
 ├── go.mod
 └── go.sum
 ```
