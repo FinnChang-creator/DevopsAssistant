@@ -1,0 +1,30 @@
+{
+  "go.useLanguageServer": true,
+  "gopls": {
+    "ui.semanticTokens": true,
+    "ui.completion.usePlaceholders": true,
+    "ui.diagnostic.analyses": {
+      "unusedparams": true,
+      "shadow": true,
+      "unusedwrite": true,
+      "fieldalignment": false
+    },
+    "formatting.gofumpt": true,
+    "staticcheck": true
+  },
+  "[go]": {
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    },
+    "editor.suggest.snippetsPreventQuickSuggestions": false
+  },
+  "go.lintTool": "staticcheck",
+  "go.lintOnSave": "workspace",
+  "go.buildOnSave": "workspace",
+  "go.testFlags": ["-v", "-race"],
+  "go.coverOnSingleTest": true,
+  "go.coverageDecorator": {
+    "type": "gutter"
+  }
+}
