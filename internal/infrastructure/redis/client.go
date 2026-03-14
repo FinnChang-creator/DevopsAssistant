@@ -17,7 +17,7 @@ var (
 func Init(ctx context.Context) error {
 	Client = redis.NewClient(config.RedisConfig.ToRedisOptions())
 	if err := Client.Ping(ctx).Err(); err != nil {
-		return fmt.Errorf("Redis连接失败: %w", err)
+		return fmt.Errorf(" Redis连接失败: %w", err)
 	}
 	g.Log().Info(ctx, "Redis初始化成功")
 
@@ -38,7 +38,7 @@ func hasRedisStack(ctx context.Context) (bool, error) {
 
 	modules, ok := result.([]interface{})
 	if !ok {
-		return false, fmt.Errorf("Redis模块列表格式错误: 期望 []interface{}, 实际 %T", result)
+		return false, fmt.Errorf(" Redis模块列表格式错误: 期望 []interface{}, 实际 %T", result)
 	}
 
 	for _, module := range modules {

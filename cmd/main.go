@@ -47,7 +47,7 @@ func main() {
 	}
 	fmt.Println("[info] 知识索引器构建成功")
 
-	docsDir := "./docs"
+	docsDir := "../docs"
 	if _, err := os.Stat(docsDir); err != nil {
 		if os.IsNotExist(err) {
 			fmt.Printf("[error] 目标目录不存在: %s\n", docsDir)
@@ -62,7 +62,7 @@ func main() {
 		if err != nil {
 			errMsg := fmt.Sprintf("[error] 遍历路径%s失败: %v", path, err)
 			fmt.Println(errMsg)
-			return fmt.Errorf(errMsg)
+			return fmt.Errorf("%s", errMsg)
 		}
 
 		if d.IsDir() {
