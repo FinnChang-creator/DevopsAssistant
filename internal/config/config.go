@@ -4,6 +4,8 @@ import (
 	"context"
 	"crypto/tls"
 	"time"
+
+	"github.com/redis/go-redis/v9"
 )
 
 var (
@@ -77,7 +79,7 @@ type TLSConfig struct {
 	Insecure   bool   `yaml:"insecure" default:"false"`
 }
 
-func (c *RedisClientConfig) ToRedisOptions() interface{} {
+func (c *RedisClientConfig) ToRedisOptions() *redis.Options {
 	var tlsCfg *tls.Config
 	if c.TLS.Enabled {
 		tlsCfg = &tls.Config{
@@ -96,42 +98,7 @@ func (c *RedisClientConfig) ToRedisOptions() interface{} {
 		poolTimeout = c.ReadTimeout + time.Second
 	}
 
-	return struct {
-		Network               string
-		Addr                  string
-		NodeAddress           string
-		ClientName            string
-		Protocol              int
-		Username              string
-		Password              string
-		DB                    int
-		MaxRetries            int
-		MinRetryBackoff       time.Duration
-		MaxRetryBackoff       time.Duration
-		DialTimeout           time.Duration
-		DialerRetries         int
-		DialerRetryTimeout    time.Duration
-		ReadTimeout           time.Duration
-		WriteTimeout          time.Duration
-		ContextTimeoutEnabled bool
-		ReadBufferSize        int
-		WriteBufferSize       int
-		PoolFIFO              bool
-		PoolSize              int
-		MaxConcurrentDials    int
-		PoolTimeout           time.Duration
-		MinIdleConns          int
-		MaxIdleConns          int
-		MaxActiveConns        int
-		ConnMaxIdleTime       time.Duration
-		ConnMaxLifetime       time.Duration
-		ConnMaxLifetimeJitter time.Duration
-		TLSConfig             *tls.Config
-		DisableIdentity       bool
-		IdentitySuffix        string
-		UnstableResp3         bool
-		FailingTimeoutSeconds int
-	}{
+	return &redis.Options{
 		Network:               c.Network,
 		Addr:                  c.Addr,
 		NodeAddress:           c.NodeAddress,

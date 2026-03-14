@@ -15,12 +15,12 @@ var (
 )
 
 func Init(ctx context.Context) error {
-	Client = redis.NewClient(config.RedisConfig.ToRedisOptions().(*redis.Options))
+	Client = redis.NewClient(config.RedisConfig.ToRedisOptions())
 	if err := Client.Ping(ctx).Err(); err != nil {
 		return fmt.Errorf("Redis连接失败: %w", err)
 	}
 	g.Log().Info(ctx, "Redis初始化成功")
-	
+
 	if has, err := hasRedisStack(ctx); err != nil {
 		return err
 	} else if !has {
@@ -31,15 +31,31 @@ func Init(ctx context.Context) error {
 }
 
 func hasRedisStack(ctx context.Context) (bool, error) {
-	modules, err := Client.Do(ctx, "MODULE", "LIST").Result()
+	result, err := Client.Do(ctx, "MODULE", "LIST").Result()
 	if err != nil {
-		return false, fmt.Errorf("执行 MODULE LIST 失败：%w", err)
+		return false, fmt.Errorf("获取Redis模块列表失败: %w", err)
 	}
 
-	modulesStr := fmt.Sprint(modules)
-	if strings.Contains(modulesStr, "redis-stack-server") {
-		return true, nil
+	modules, ok := result.([]interface{})
+	if !ok {
+		return false, fmt.Errorf("Redis模块列表格式错误")
 	}
 
-	return false, fmt.Errorf("没有Redis Stack模块")
+	for _, module := range modules {
+		moduleInfo, ok := module.([]interface{})
+		if !ok || len(moduleInfo) < 2 {
+			continue
+		}
+
+		name, ok := moduleInfo[1].(string)
+		if !ok {
+			continue
+		}
+
+		if strings.EqualFold(name, "searchlight") || strings.EqualFold(name, "redisearch") {
+			return true, nil
+		}
+	}
+
+	return false, nil
 }

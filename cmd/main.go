@@ -14,7 +14,13 @@ import (
 	"github.com/FinnChang-creator/DevopsAssistant/internal/pkg/callback"
 	"github.com/cloudwego/eino/components/document"
 	"github.com/cloudwego/eino/compose"
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gcfg"
 )
+
+func init() {
+	g.Cfg().GetAdapter().(*gcfg.AdapterFile).SetPath("..")
+}
 
 func main() {
 	ctx := context.Background()
