@@ -38,16 +38,21 @@ func hasRedisStack(ctx context.Context) (bool, error) {
 
 	modules, ok := result.([]interface{})
 	if !ok {
-		return false, fmt.Errorf("Redis模块列表格式错误")
+		return false, fmt.Errorf("Redis模块列表格式错误: 期望 []interface{}, 实际 %T", result)
 	}
 
 	for _, module := range modules {
-		moduleInfo, ok := module.([]interface{})
-		if !ok || len(moduleInfo) < 2 {
+		moduleInfo, ok := module.(map[interface{}]interface{})
+		if !ok {
 			continue
 		}
 
-		name, ok := moduleInfo[1].(string)
+		nameVal, exists := moduleInfo["name"]
+		if !exists {
+			continue
+		}
+
+		name, ok := nameVal.(string)
 		if !ok {
 			continue
 		}
