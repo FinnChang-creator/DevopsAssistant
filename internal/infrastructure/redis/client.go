@@ -52,7 +52,7 @@ func hasRedisStack(ctx context.Context) (bool, error) {
 			continue
 		}
 
-		if strings.EqualFold(name, "searchlight") || strings.EqualFold(name, "redisearch") {
+		if strings.EqualFold(name, "search") || strings.EqualFold(name, "searchlight") || strings.EqualFold(name, "redisearch") {
 			return true, nil
 		}
 	}
